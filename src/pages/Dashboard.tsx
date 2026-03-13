@@ -38,10 +38,30 @@ function groupLoans(loans: { event: LendingEvent; isLocal: boolean }[], personFi
   return Array.from(map.values());
 }
 
+function getShareDesc(events: LendingEvent[]) {
+  const eventsByLender = Object.groupBy(events, (e) => e.lenderName);
+
+  const shareDesc = [];
+  for (let lenderName in eventsByLender) {
+    const eventsForLender = eventsByLender[lenderName]!;
+    const eventsForLenderByCard = Object.groupBy(eventsForLender, (e) => e.cardName);
+    const shareDescRow = [];
+
+    for (let cardName in eventsForLenderByCard) {
+      shareDescRow.push(eventsForLenderByCard[cardName]!.length + "x " + cardName);
+    }
+
+    shareDesc.push(eventsForLender[0].borrowerName + " returned to " + eventsForLender[0].lenderName + ": " + shareDescRow.join(", "));
+  }
+
+  return shareDesc.join("; ");
+}
+
 export function Dashboard() {
   const { loans, reload } = useActiveLoans();
   useRegisterRefresh(reload);
   const [shareCode, setShareCode] = useState<string | null>(null);
+  const [shareDesc, setShareDesc] = useState('');
 
   const lentOut = loans.filter(l => l.isLocal);
   const borrowing = loans.filter(l => !l.isLocal);
@@ -52,6 +72,7 @@ export function Dashboard() {
   const handleReturnGroup = useCallback(async (group: LoanGroup) => {
     const returnEvents: LendingEvent[] = [];
     const baseTimestamp = Date.now();
+
     for (let i = 0; i < group.events.length; i++) {
       const lendEvent = group.events[i];
       const partial = {
@@ -70,6 +91,7 @@ export function Dashboard() {
       returnEvents.push(event);
     }
     setShareCode(encodeEvents(returnEvents));
+    setShareDesc(getShareDesc(returnEvents));
     reload();
   }, [reload]);
 
@@ -139,7 +161,7 @@ export function Dashboard() {
         )}
       </section>
 
-      {shareCode && <ShareModal code={shareCode} onClose={() => setShareCode(null)} />}
+      {shareCode && <ShareModal code={shareCode} desc={shareDesc} onClose={() => {setShareCode(null); setShareDesc('');}} />}
     </div>
   );
 }
