@@ -41,7 +41,7 @@ function App() {
   }
 
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={import.meta.env.BASE_URL}>
       <RefreshProvider>
         <div className="flex flex-col h-full">
           <AppContent />
