@@ -2,10 +2,15 @@ import { useState } from 'react';
 import { useAllEvents, useFriends } from '../hooks';
 import { getCardImageUrl } from '../scryfall';
 import { useRegisterRefresh } from '../RefreshContext';
+import { encodeEvents } from '../sharing';
+import { ShareModal } from '../components/ShareModal';
+import { db, type LendingEvent } from '../db';
 
 export function History() {
   const { events, reload: reloadEvents } = useAllEvents();
   const { friends, reload: reloadFriends } = useFriends();
+  const [shareCode, setShareCode] = useState<string | null>(null);
+  const [shareDesc, setShareDesc] = useState('');
   useRegisterRefresh(reloadEvents);
   useRegisterRefresh(reloadFriends);
   const [filter, setFilter] = useState('');
@@ -13,6 +18,16 @@ export function History() {
   const filtered = filter
     ? events.filter(e => e.lenderName === filter || e.borrowerName === filter)
     : events;
+
+  const handleShareCode = async (event: LendingEvent) => {
+    setShareCode(encodeEvents([event]));
+    setShareDesc(event.borrowerName + " borrowed from " + event.lenderName + ": 1x " + event.cardName);
+  };
+
+  const handleDelete = async (event: LendingEvent) => {
+    db.events.where("id").equals(event.id).delete();
+    reloadEvents();
+  };
 
   return (
     <div className="p-4 pb-4">
@@ -68,6 +83,23 @@ export function History() {
                 </p>
                 {event.note && <p className="text-xs text-slate-500 italic">{event.note}</p>}
                 <p className="text-xs text-slate-500">{new Date(event.timestamp).toLocaleString()}</p>
+              </div>
+              <div>
+                <button
+                  onClick={() => handleShareCode(event)}
+                  className="px-3 py-2 bg-green-600 hover:bg-green-500 rounded-lg text-sm font-semibold transition-colors shrink-0"
+                >
+                  Code
+                </button>
+                {shareCode && <ShareModal code={shareCode} desc={shareDesc} onClose={() => setShareCode(null)} />}
+              </div>
+              <div>
+                <button
+                  onClick={() => handleDelete(event)}
+                  className="px-3 py-2 bg-green-600 hover:bg-green-500 rounded-lg text-sm font-semibold transition-colors shrink-0"
+                >
+                  Delete
+                </button>
               </div>
             </div>
           ))}
