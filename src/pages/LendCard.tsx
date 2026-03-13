@@ -14,6 +14,7 @@ export function LendCard() {
   const [customBorrower, setCustomBorrower] = useState('');
   const [note, setNote] = useState('');
   const [shareCode, setShareCode] = useState<string | null>(null);
+  const [shareDesc, setShareDesc] = useState('');
 
   const effectiveBorrower = (borrower && borrower !== '__custom__') ? borrower : customBorrower.trim();
 
@@ -43,6 +44,7 @@ export function LendCard() {
     const baseTimestamp = Date.now();
     const events: LendingEvent[] = [];
     let offset = 0;
+    let shareDescCards = [];
     for (const { name: cardName, qty } of cards) {
       for (let q = 0; q < qty; q++) {
         const partial = {
@@ -56,6 +58,7 @@ export function LendCard() {
         const id = generateEventId(partial);
         events.push({ ...partial, id });
       }
+      shareDescCards.push( qty + "x " + cardName );
     }
 
     for (const event of events) {
@@ -66,6 +69,7 @@ export function LendCard() {
     reloadFriends();
 
     setShareCode(encodeEvents(events));
+    setShareDesc(effectiveBorrower + " borrowed from " + myName + ": " + shareDescCards.join(", "));
     setCards([]);
     setBorrower('');
     setCustomBorrower('');
@@ -168,13 +172,13 @@ export function LendCard() {
         <button
           onClick={handleSubmit}
           disabled={cards.length === 0 || !effectiveBorrower}
-          className="w-full py-3 bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-600 disabled:text-slate-400 rounded-lg font-semibold transition-colors text-lg"
+          className="px-4 py-3 bg-indigo-600 hover:bg-indigo-500 rounded-lg font-semibold transition-colors text-sm shrink-0"
         >
           {totalCards <= 1 ? 'Lend Card' : `Lend ${totalCards} Cards`}
         </button>
       </div>
 
-      {shareCode && <ShareModal code={shareCode} onClose={() => setShareCode(null)} />}
+      {shareCode && <ShareModal code={shareCode} desc={shareDesc} onClose={() => { setShareCode(null); setShareDesc('')}} />}
     </div>
   );
 }
