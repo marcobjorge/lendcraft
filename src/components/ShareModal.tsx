@@ -1,18 +1,34 @@
 import { QRCodeSVG } from 'qrcode.react';
 import { useState } from 'react';
+import { shareOnMobile } from "react-mobile-share";
 
 interface Props {
+  desc?: string;
   code: string;
   onClose: () => void;
 }
 
-export function ShareModal({ code, onClose }: Props) {
+export function ShareModal({ code, desc, onClose }: Props) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(code);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const onLinkShare = async () => {
+    shareOnMobile({
+      url: location.origin + location.pathname.split('/').slice(0,-1).join('/') + "/import?code=" + code,
+      title: desc || "Lendcraft"
+    });
+  };
+
+  const onDiscordShare = async () => {
+    shareOnMobile({
+      text: "[" + (desc || 'Lendcraf') + "](" + location.origin + location.pathname.split('/').slice(0,-1).join('/') + "/import?code=" + code + ")",
+      title: desc || "Lendcraft"
+    });
   };
 
   return (
@@ -32,10 +48,20 @@ export function ShareModal({ code, onClose }: Props) {
 
         <div className="flex gap-3">
           <button
+            onClick={onLinkShare}
+            className="flex-1 py-3 bg-indigo-600 hover:bg-indigo-500 rounded-lg font-semibold transition-colors"
+          >Link
+          </button>
+          <button
+            onClick={onDiscordShare}
+            className="flex-1 py-3 bg-indigo-600 hover:bg-indigo-500 rounded-lg font-semibold transition-colors"
+          >Discord
+          </button>
+          <button
             onClick={handleCopy}
             className="flex-1 py-3 bg-indigo-600 hover:bg-indigo-500 rounded-lg font-semibold transition-colors"
           >
-            {copied ? 'Copied!' : 'Copy Code'}
+            {copied ? 'Copied!' : 'Copy'}
           </button>
           <button
             onClick={onClose}

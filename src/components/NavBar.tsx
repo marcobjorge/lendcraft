@@ -1,4 +1,4 @@
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useSearchParams, useLocation, useNavigate } from 'react-router-dom';
 
 const tabs = [
   { path: '/', label: 'Dashboard', icon: '🏠' },
@@ -11,6 +11,7 @@ const tabs = [
 export function NavBar() {
   const location = useLocation();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   return (
     <nav className="shrink-0 bg-slate-800 border-t border-slate-700">
@@ -20,7 +21,11 @@ export function NavBar() {
           return (
             <button
               key={tab.path}
-              onClick={() => navigate(tab.path)}
+              onClick={() => navigate({
+                  pathname: tab.path,
+                  search: searchParams.toString(),
+                })
+              }
               className={`flex flex-col items-center gap-0.5 px-2 py-1 text-xs transition-colors ${
                 active ? 'text-indigo-400' : 'text-slate-400 hover:text-slate-200'
               }`}

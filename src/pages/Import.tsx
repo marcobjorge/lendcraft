@@ -1,9 +1,11 @@
 import { useState, useRef, useEffect } from 'react';
 import { decodeEvents } from '../sharing';
 import { addImportedEvent } from '../db';
+import { useSearchParams } from 'react-router-dom';
 
 export function Import() {
-  const [code, setCode] = useState('');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [code, setCode] = useState(searchParams.get('code') || '');
   const [status, setStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
   const [scanning, setScanning] = useState(false);
   const videoRef = useRef<HTMLDivElement>(null);
@@ -22,6 +24,8 @@ export function Import() {
       if (dupes > 0) message += ` (${dupes} duplicate${dupes !== 1 ? 's' : ''} skipped)`;
       setStatus({ type: 'success', message });
       setCode('');
+      searchParams.delete('code');
+      setSearchParams(searchParams);
     } catch {
       setStatus({ type: 'error', message: 'Invalid share code. Check the code and try again.' });
     }
