@@ -26,6 +26,7 @@ export function History() {
 
   const handleDelete = async (event: LendingEvent) => {
     db.events.where("id").equals(event.id).delete();
+    db.localEvents.where("eventId").equals(event.id).delete();
     reloadEvents();
   };
 
