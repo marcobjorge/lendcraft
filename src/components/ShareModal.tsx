@@ -41,11 +41,6 @@ export function ShareModal({ code, desc, onClose }: Props) {
           <QRCodeSVG value={code} size={200} />
         </div>
 
-        <div className="bg-slate-700 rounded-lg p-3 mb-4">
-          <p className="text-xs text-slate-400 mb-1">Text code:</p>
-          <p className="text-xs font-mono break-all select-all">{code}</p>
-        </div>
-
         <div className="flex gap-3">
           <button
             onClick={onLinkShare}
