@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useMyName, useFriends, useAllEvents } from '../hooks';
-import { addFriend, removeFriend, db } from '../db';
+import { addFriend, removeFriend, db, addImportedEvent, addLocalEvent } from '../db';
 import { encodeEvents } from '../sharing';
 
 export function Settings() {
@@ -62,7 +62,11 @@ export function Settings() {
         for (const event of imported) {
           const exists = await db.events.get(event.id);
           if (!exists) {
-            await db.events.add(event);
+            if( name === event.lenderName  ) {
+              await addImportedEvent(event);
+            } else {
+              await addLocalEvent(event);
+            }
             added++;
           }
         }
