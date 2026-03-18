@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
 import { decodeEvents } from '../sharing';
-import { addImportedEvent } from '../db';
+import { addImportedEvent, addLocalEvent } from '../db';
 import { useSearchParams } from 'react-router-dom';
+import { useMyName } from '../hooks';
 
 export function Import() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -10,13 +11,14 @@ export function Import() {
   const [scanning, setScanning] = useState(false);
   const videoRef = useRef<HTMLDivElement>(null);
   const scannerRef = useRef<any>(null);
+  const { name: myName } = useMyName();
 
   const handleImport = async (input: string) => {
     try {
       const events = decodeEvents(input.trim());
       let added = 0;
       for (const event of events) {
-        const wasAdded = await addImportedEvent(event);
+        const wasAdded =  event.lenderName === myName ? await addLocalEvent(event) : await addImportedEvent(event);
         if (wasAdded) added++;
       }
       const dupes = events.length - added;

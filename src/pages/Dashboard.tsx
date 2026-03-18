@@ -1,10 +1,11 @@
 import { useState, useCallback } from 'react';
 import { useActiveLoans } from '../hooks';
-import { generateEventId, addLocalEvent, type LendingEvent } from '../db';
+import { generateEventId, addImportedEvent, addLocalEvent, type LendingEvent } from '../db';
 import { encodeEvents } from '../sharing';
 import { getCardImageUrl } from '../scryfall';
 import { ShareModal } from '../components/ShareModal';
 import { useRegisterRefresh } from '../RefreshContext';
+import { useMyName } from '../hooks';
 
 interface LoanGroup {
   key: string;
@@ -59,6 +60,8 @@ function getShareDesc(events: LendingEvent[]) {
 
 export function Dashboard() {
   const { loans, reload } = useActiveLoans();
+  const { name: myName } = useMyName();
+
   useRegisterRefresh(reload);
   const [shareCode, setShareCode] = useState<string | null>(null);
   const [shareDesc, setShareDesc] = useState('');
@@ -87,7 +90,12 @@ export function Dashboard() {
       };
       const id = generateEventId(partial);
       const event: LendingEvent = { ...partial, id };
-      await addLocalEvent(event);
+      if( event.lenderName === myName) {
+        await addLocalEvent(event);
+      } else {
+        await addImportedEvent(event);
+      }
+
       returnEvents.push(event);
     }
     setShareCode(encodeEvents(returnEvents));
@@ -156,7 +164,7 @@ export function Dashboard() {
           <p className="text-slate-400 text-sm">Not borrowing any cards.</p>
         ) : (
           <div className="space-y-2">
-            {borrowGroups.map(g => renderGroup(g, `← ${g.person}`, false))}
+            {borrowGroups.map(g => renderGroup(g, `← ${g.person}`, true))}
           </div>
         )}
       </section>

@@ -3,7 +3,8 @@ import { useSearchParams, useLocation, useNavigate } from 'react-router-dom';
 const tabs = [
   { path: '/', label: 'Dashboard', icon: '🏠' },
   { path: '/lend', label: 'Lend', icon: '📤' },
-  { path: '/import', label: 'Import', icon: '📥' },
+  { path: '/borrow', label: 'Borrow', icon: '📥' },
+  { path: '/import', label: 'Import', icon: '▣' },
   { path: '/history', label: 'History', icon: '📋' },
   { path: '/settings', label: 'Settings', icon: '⚙️' },
 ] as const;

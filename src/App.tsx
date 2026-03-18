@@ -6,6 +6,7 @@ import { PullToRefresh } from './components/PullToRefresh';
 import { RefreshProvider, useRefreshAll } from './RefreshContext';
 import { Dashboard } from './pages/Dashboard';
 import { LendCard } from './pages/LendCard';
+import { BorrowCard } from './pages/BorrowCard';
 import { Import } from './pages/Import';
 import { History } from './pages/History';
 import { Settings } from './pages/Settings';
@@ -17,6 +18,7 @@ function AppContent() {
       <Routes>
         <Route path="/" element={<Dashboard />} />
         <Route path="/lend" element={<LendCard />} />
+        <Route path="/borrow" element={<BorrowCard />} />
         <Route path="/import" element={<Import />} />
         <Route path="/history" element={<History />} />
         <Route path="/settings" element={<Settings />} />
