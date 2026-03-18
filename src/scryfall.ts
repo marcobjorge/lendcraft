@@ -11,7 +11,7 @@ export async function autocompleteCard(query: string): Promise<string[]> {
   }
 
   const res = await fetch(
-    `https://api.scryfall.com/cards/autocomplete?q=${encodeURIComponent(query)}`
+    `https://api.scryfall.com/cards/autocomplete?include_extras=true&q=${encodeURIComponent(query)}`
   );
   if (!res.ok) return [];
   const data = await res.json();
