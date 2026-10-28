@@ -64,10 +64,10 @@ export function Settings() {
           if (!exists) {
             if( name === event.lenderName  ) {
               console.log( event.lenderName + " >> " + event.borrowerName)
-              await addImportedEvent(event);
+              await addLocalEvent(event);
             } else {
               console.log( event.lenderName + " !! " + event.borrowerName)
-              await addLocalEvent(event);
+              await addImportedEvent(event);
             }
             added++;
           }
