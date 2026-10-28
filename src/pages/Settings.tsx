@@ -63,6 +63,7 @@ export function Settings() {
           const exists = await db.events.get(event.id);
           if (!exists) {
             if( name === event.lenderName  ) {
+              console.log( event.lenderName + " >> " + event.borrowerName)
               await addImportedEvent(event);
             } else {
               await addLocalEvent(event);
