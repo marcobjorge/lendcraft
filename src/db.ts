@@ -106,6 +106,7 @@ export async function addImportedEvent(event: LendingEvent): Promise<boolean> {
   const existing = await db.events.get(event.id);
   if (existing) return false;
   await db.events.add(event);
+  if (event.lenderName) await db.friends.put({ name: event.lenderName });
   return true;
 }
 
