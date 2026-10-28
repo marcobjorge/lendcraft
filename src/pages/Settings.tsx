@@ -66,6 +66,7 @@ export function Settings() {
               console.log( event.lenderName + " >> " + event.borrowerName)
               await addImportedEvent(event);
             } else {
+              console.log( event.lenderName + " !! " + event.borrowerName)
               await addLocalEvent(event);
             }
             added++;
